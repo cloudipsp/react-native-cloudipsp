@@ -18,15 +18,15 @@ import {
   Alert
 } from 'react-native';
 
-import { CardInput } from './card-input';
-import {CloudipspWebView} from './cloudipsp-webview';
+import { CardInput } from 'card-input';
+import { CloudipspWebView } from 'cloudipsp-webview';
 import {
   Currency,
   Order,
   Receipt,
   Failure,
   Cloudipsp
-} from './cloudipsp';
+} from 'cloudipsp';
 
 class cloudipsp extends Component {
   constructor(props) {
