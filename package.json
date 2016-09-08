@@ -1,0 +1,29 @@
+{
+  "name": "react-native-cloudipsp",
+  "version": "0.0.1",
+  "description": "Library for accepting payments directly from android application's clients.",
+  "main": "cloudipsp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cloudipsp/react-native-cloudipsp.git"
+  },
+  "keywords": [
+    "react-component",
+    "react-native",
+    "ios",
+    "android",
+    "payment"
+  ],
+  "peerDependencies": {
+    "react-native": ">=0.29"
+  },
+  "author": "Maxim Kozenko",
+  "license": "The MIT License (MIT)",
+  "bugs": {
+    "url": "https://github.com/cloudipsp/react-native-cloudipsp/issues"
+  },
+  "homepage": "https://cloudipsp.com"
+}
