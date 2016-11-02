@@ -412,9 +412,8 @@ export class Cloudipsp {
             },
             body: body
           })
-          .then((response) => {
-            let html = response._bodyText;
-            
+          .then(response => response.text())
+          .then(html => {            
             return this.__cloudipspView__((cloudipspView) => {
               return cloudipspView.__confirm__(checkout.url, html);
             });
