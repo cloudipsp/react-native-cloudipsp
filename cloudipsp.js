@@ -136,16 +136,18 @@ export class Card {
 
   __lunaCheck__ = (cardNumber) => {
     var sum = 0;
-    for (var i = 0; i < 16; i += 2) {
+    var odd = true;
+    for (var i = 0; i < cardNumber.length; i++) {
       try {
-        let a = Number(cardNumber.charAt(i));
-        let b = Number(cardNumber.charAt(i+1));
-          
-        var num = a * 2;
+        var num = Number(cardNumber.charAt(i));
+        odd = !odd;
+        if (odd) {
+          num *= 2;
+        }
         if (num > 9) {
           num -= 9;
         }
-        sum += num + b;
+        sum += num;
       } catch (e) {
         return false;
       }
@@ -156,7 +158,7 @@ export class Card {
       
   isValidCardNumber = () => {
     let cardNumber = this.__getCardNumber__();
-    if (cardNumber.length != 16) {
+    if (!(12 <= cardNumber.length && cardNumber.length <= 19)) {
       return false;
     }
     if (!this.__lunaCheck__(cardNumber)) {
@@ -175,7 +177,7 @@ export class Card {
   }
     
   __isValidExpireYearValue__ = (yy) => {
-    return yy >= 16 && yy <= 99;
+    return yy >= 17 && yy <= 99;
   }
     
   isValidExpireYear = () => {
@@ -377,7 +379,7 @@ export class Failure extends Error {
 export class Cloudipsp {
   constructor(merchantId : number = req('merchantId'), cloudipspView = req('cloudipspView')) {
     this.__merchantId__ = merchantId;
-    this.__baseUrl__ = 'https://api.oplata.com';
+    this.__baseUrl__ = 'https://api.fondy.eu';
     this.__callbackUrl__ = 'http://callback';
     this.__cloudipspView__ = cloudipspView;
   }
@@ -413,8 +415,9 @@ export class Cloudipsp {
             body: body
           })
           .then((response) => {
-            let html = response._bodyText;
-            
+            return response.text();
+          })
+          .then((html) => {
             return this.__cloudipspView__((cloudipspView) => {
               return cloudipspView.__confirm__(checkout.url, html);
             });

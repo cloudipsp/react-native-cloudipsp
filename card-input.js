@@ -60,7 +60,7 @@ export class CardInput extends Component {
           <TextInput 
             ref="inputNumber"
             value={this.state.__number__}
-            maxLength = {16}
+            maxLength = {19}
             onChangeText={(text) => 
               this.setState({__number__:text})}
             onSubmitEditing={(event) => { 
