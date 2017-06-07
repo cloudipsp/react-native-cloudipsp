@@ -137,7 +137,7 @@ export class Card {
   __lunaCheck__ = (cardNumber) => {
     var sum = 0;
     var odd = true;
-    for (var i = 0; i < cardNumber.length; i++) {
+    for (var i = cardNumber.length - 1; i >= 0; i--) {
       try {
         var num = Number(cardNumber.charAt(i));
         odd = !odd;
