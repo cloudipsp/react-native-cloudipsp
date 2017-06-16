@@ -54,7 +54,7 @@ export class Order {
       currency : Currency = req('currency'),
       orderId : string = req('orderId'),
       description : string = req('description'),
-      email : string = req('email')) {
+      email : string) {
     
     this.amount = amount;
     this.currency = currency;
