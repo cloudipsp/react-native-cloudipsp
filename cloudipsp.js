@@ -208,7 +208,7 @@ export class Card {
       
   isValidCvv = () => {
     let cvv = this.__getCvv__();
-    return cvv.length === 3;
+    return cvv.length === 3 || cvv.length === 4;
   }
       
   isValidCard = () => {

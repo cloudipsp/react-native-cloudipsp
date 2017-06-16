@@ -101,7 +101,7 @@ export class CardInput extends Component {
           <TextInput 
             ref="inputCvv"
             value={this.state.__cvv__}
-            maxLength = {3}
+            maxLength = {4}
             onChangeText={(text) => 
               this.setState({__cvv__:text})}
             keyboardType='numeric'
