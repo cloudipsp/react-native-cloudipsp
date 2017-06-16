@@ -104,11 +104,6 @@ export class CardInput extends Component {
             maxLength = {4}
             onChangeText={(text) => 
               this.setState({__cvv__:text})}
-            onSubmitEditing={(event) => {
-              if (this.props.onCompletion != undefined) {
-                  this.props.onCompletion(this);
-              }
-            }}
             keyboardType='numeric'
             style={this.props.textInputStyle}/>
         </View>
