@@ -1,117 +1,83 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
-  AppRegistry,
-  View,
-  Text,
-  TextInput,
-  Dimensions,
-  ToastAndroid
+    View,
+    Text,
+    TextInput
 } from 'react-native';
 
-import { Card } from './cloudipsp'
+import {Card} from './cloudipsp'
 
-export class CardInput extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {__number__:'',__exp_mm__:'',__exp_yy__:'',__cvv__:''};
-  }
-  
-  getCard = () => {
-    let s = this.state;
-    let card = new Card();
-    card.__getCardNumber__ = () => {
-      return s.__number__;
-    };
-    card.__getExpYy__ = () => {
-      try {
-        return Number(s.__exp_yy__);
-      } catch (e) {
-        return 0;
-      }
-    };
-    card.__getExpMm__ = () => {
-      try {
-        return Number(s.__exp_mm__);
-      } catch (e) {
-        return 0;
-      }
-    };
-    card.__getCvv__ = () => {
-      return s.__cvv__;
-    };
-    
-    return card;
-  }
-  
-  test = () => {
-    this.setState({__number__:'4444555566661111',__exp_mm__:'12',__exp_yy__:'18',__cvv__:'111'});
-  }
-  
-  focus = () => {
-    this.refs.inputNumber.focus();
-  }
-  
-  render() {
-    return  (
-        <View>
-          <Text
-            style={this.props.textStyle}
-            onPress={this.props.debug?this.test:undefined}>Card Number:</Text>
-          <TextInput 
-            ref="inputNumber"
-            value={this.state.__number__}
-            maxLength = {19}
-            onChangeText={(text) => 
-              this.setState({__number__:text})}
-            onSubmitEditing={(event) => { 
-              this.refs.inputMm.focus(); 
-            }}
-            keyboardType='numeric'
-            style={this.props.textInputStyle}/>
-          <Text style={this.props.textStyle}>Expiry:</Text>
-          <View style={{flexDirection: 'row'}}>
-            <TextInput 
-              ref="inputMm"
-              value={this.state.__exp_mm__}
-              style={{flex: 1}} 
-              placeholder='MM'
-              maxLength = {2}
-              onChangeText={(text) => 
-                this.setState({__exp_mm__:text})}
-              onSubmitEditing={(event) => { 
-                    this.refs.inputYy.focus(); 
-              }}
-              keyboardType='numeric'
-              style={this.props.textInputStyle}/>
-            <TextInput 
-              ref="inputYy"
-              value={this.state.__exp_yy__}
-              style={{flex: 1}} 
-              placeholder='YY' 
-              maxLength = {2}
-              onChangeText={(text) => 
-                this.setState({__exp_yy__:text})}
-              onSubmitEditing={(event) => { 
-                this.refs.inputCvv.focus(); 
-              }}
-              keyboardType='numeric'
-              style={this.props.textInputStyle}/>
-          </View>
-          <Text style={this.props.textStyle}>CVV:</Text>
-          <TextInput 
-            ref="inputCvv"
-            value={this.state.__cvv__}
-            maxLength = {4}
-            onChangeText={(text) => 
-              this.setState({__cvv__:text})}
-            onSubmitEditing={(event) => {
-              if (this.props.onCompletion != undefined) {
-                  this.props.onCompletion(this);
-              }
-            }}
-            keyboardType='numeric'
-            style={this.props.textInputStyle}/>
-        </View>
-    );
-  }
+import CardLayout from './card-layout';
+import CardInputNumber from './card-field-number';
+import CardInputExpMm from './card-field-exp-mm';
+import CardInputExpYy from './card-field-exp-yy';
+import CardInputCvv from './card-field-cvv';
+
+export class CardInput extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    getCard = () => {
+        return this.refs.cardLayout.getCard();
+    }
+
+    test = () => {
+        this.refs.cardLayout.test();
+    }
+
+    focus = () => {
+        this.refs.inputNumber.focus();
+    }
+
+    render() {
+        return (
+            <CardLayout
+                ref='cardLayout'
+            >
+                <Text
+                    style={this.props.textStyle}
+                    onPress={this.props.debug?this.test:undefined}>
+                    Card Number:
+                </Text>
+                <CardInputNumber
+                    ref="inputNumber"
+                    onSubmitEditing={() => {
+                        this.refs.inputMm.focus();
+                    }}
+                    style={this.props.textInputStyle}
+                />
+                <Text style={this.props.textStyle}>Expiry:</Text>
+                <View style={{flexDirection: 'row'}}>
+                    <CardInputExpMm
+                        ref="inputMm"
+                        style={{flex: 1}}
+                        placeholder='MM'
+                        onSubmitEditing={() => {
+                            this.refs.inputYy.focus();
+                        }}
+                        style={this.props.textInputStyle}
+                    />
+                    <CardInputExpYy
+                        ref="inputYy"
+                        style={{flex: 1}}
+                        placeholder='YY'
+                        onSubmitEditing={() => {
+                            this.refs.inputCvv.focus();
+                        }}
+                        style={this.props.textInputStyle}/>
+                </View>
+                <Text style={this.props.textStyle}>CVV:</Text>
+                <CardInputCvv
+                    ref="inputCvv"
+                    onSubmitEditing={() => {
+                        if (this.props.onCompletion != undefined) {
+                            this.props.onCompletion(this);
+                        }
+                    }}
+                    style={this.props.textInputStyle}
+                />
+            </CardLayout>
+        );
+    }
 }
