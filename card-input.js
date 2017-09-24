@@ -1,11 +1,8 @@
 import React from 'react';
 import {
     View,
-    Text,
-    TextInput
+    Text
 } from 'react-native';
-
-import {Card} from './cloudipsp'
 
 import CardLayout from './card-layout';
 import CardInputNumber from './card-field-number';
@@ -20,6 +17,10 @@ export class CardInput extends React.Component {
 
     getCard = () => {
         return this.refs.cardLayout.getCard();
+    }
+
+    showCard = (card) => {
+        this.refs.cardLayout.showCard(card);
     }
 
     test = () => {
@@ -51,21 +52,19 @@ export class CardInput extends React.Component {
                 <View style={{flexDirection: 'row'}}>
                     <CardInputExpMm
                         ref="inputMm"
-                        style={{flex: 1}}
                         placeholder='MM'
                         onSubmitEditing={() => {
                             this.refs.inputYy.focus();
                         }}
-                        style={this.props.textInputStyle}
+                        style={[{flex: 1}, this.props.textInputStyle]}
                     />
                     <CardInputExpYy
                         ref="inputYy"
-                        style={{flex: 1}}
                         placeholder='YY'
                         onSubmitEditing={() => {
                             this.refs.inputCvv.focus();
                         }}
-                        style={this.props.textInputStyle}/>
+                        style={[{flex: 1}, this.props.textInputStyle]} />
                 </View>
                 <Text style={this.props.textStyle}>CVV:</Text>
                 <CardInputCvv

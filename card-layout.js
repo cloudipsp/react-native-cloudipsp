@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-    View,
-    Text,
-    TextInput
+    View
 } from 'react-native';
 
 import {Card} from './cloudipsp';
@@ -22,9 +20,15 @@ function getComponentName(component) {
 export default class CardLayout extends React.Component {
     constructor(props) {
         super(props);
+
+        this.displayedCard = undefined;
     }
 
     getCard = () => {
+        if (this.displayedCard) {
+            return null;
+        }
+
         const cardNumber = this.inputNumber._getText();
         const expMm = this.inputExpMm._getText();
         const expYy = this.inputExpYy._getText();
@@ -53,6 +57,27 @@ export default class CardLayout extends React.Component {
         };
 
         return card;
+    }
+
+    showCard = (card) => {
+        var enabled = true;
+        if (card) {
+            this.inputNumber._setText(card.__getCardNumber__());
+            this.inputExpMm._setText(String(card.__getExpYy__()));
+            this.inputExpYy._setText(String(card.__getCardNumber__()));
+            this.displayedCard = card;
+        } else {
+            enabled = false;
+            this.inputNumber._setText('');
+            this.inputExpMm._setText('');
+            this.inputExpYy._setText('');
+            this.displayedCard = undefined;
+        }
+        this.inputCvv._setText('');
+        this.inputNumber._setEnable(enabled);
+        this.inputExpMm._setEnable(enabled);
+        this.inputExpYy._setEnable(enabled);
+        this.inputCvv._setEnable(enabled);
     }
 
     test = () => {

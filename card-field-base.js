@@ -6,7 +6,11 @@ import {
 export default class CardFieldBase extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {__text__: ''};
+        this.state = {__text__: '', __enabled__: true};
+    }
+
+    _setEnable = (value) => {
+        this.setState({__enabled__: value});
     }
 
     _setText = (text) => {
@@ -38,11 +42,12 @@ export default class CardFieldBase extends React.Component {
             maxLength={this._maxLength()}
             secureTextEntry={this._isSecure()}
             multiline={false}
+            editable={this.state.__enabled__}
             keyboardType={'numeric'}
 
             value={this.state.__text__}
             onChangeText={(text) => {
-                this.setState({__text__:text});
+                this.setState({__text__: text});
             }}
         />);
     }

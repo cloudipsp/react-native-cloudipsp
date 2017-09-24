@@ -123,6 +123,10 @@ export class Order {
 }
 
 export class Card {
+    getSource = () => {
+        return 'form';
+    }
+
     __getCardNumber__ = () => {
     }
     __getExpYy__ = () => {
@@ -383,6 +387,10 @@ export class Cloudipsp {
     }
 
     pay = (card:Card = req('card'), order:Order = req('order')) => {
+        if (! card.isValidCard()) {
+            throw new Error('Card is not valid');
+        }
+
         return this.__getToken__(order)
             .then((token) => {
                 return this.__checkout__(token, card, order.email)
@@ -477,18 +485,21 @@ export class Cloudipsp {
     }
 
     __checkout__ = (token, card, email) => {
-        buildExp = (mm, yy) => {
+        const buildExp = (mm, yy) => {
             return (mm < 10 ? '0' : '') + mm + yy;
         }
 
-        let rqBody = {
+        const rqBody = {
             card_number: card.__getCardNumber__(),
             expiry_date: buildExp(card.__getExpMm__(), card.__getExpYy__()),
-            cvv2: card.__getCvv__(),
             token: token,
             email: email,
             payment_system: 'card'
         };
+
+        if (card.getSource() === 'form') {
+            rqBody.cvv2 = card.__getCvv__();
+        }
 
         return this.__apiCall__('/api/checkout/ajax', rqBody)
             .then((response) => {
