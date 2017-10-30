@@ -2,9 +2,16 @@ import React from 'react';
 
 import CardFieldBase from './card-field-base';
 
+
+function getSelfName() {
+    return 'CardFieldCvv';
+}
+
 export default class CardFieldCvv extends CardFieldBase {
     constructor(props) {
         super(props);
+            
+	    this._selfName = getSelfName;
     }
 
     _maxLength() {
@@ -16,6 +23,4 @@ export default class CardFieldCvv extends CardFieldBase {
     }
 }
 
-CardFieldCvv.getInputName = function() {
-    return 'CardFieldCvv';
-}
+CardFieldCvv.getInputName = getSelfName;

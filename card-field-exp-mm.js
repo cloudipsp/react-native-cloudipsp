@@ -2,9 +2,15 @@ import React from 'react';
 
 import CardFieldBase from './card-field-base';
 
+
+function getSelfName() {
+    return 'CardFieldExpMm';
+}
+
 export default class CardFieldExpMm extends CardFieldBase {
     constructor(props) {
         super(props);
+        this._selfName = getSelfName;
     }
 
     _maxLength() {
@@ -12,6 +18,4 @@ export default class CardFieldExpMm extends CardFieldBase {
     }
 }
 
-CardFieldExpMm.getInputName = function() {
-    return 'CardFieldExpMm';
-}
+CardFieldExpMm.getInputName = getSelfName;

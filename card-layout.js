@@ -11,10 +11,17 @@ import CardInputExpYy from './card-field-exp-yy';
 import CardInputCvv from './card-field-cvv';
 
 function getComponentName(component) {
-    if (component.type.displayName != undefined) {
-        return component.type.displayName;
+	if (component.type) {
+		if (component.type.name) {
+			return component.type.name;
+		}
+		if (component.type.displayName) {
+			return component.type.displayName;
+		}
+	}
+    if (component._selfName) {
+        return component._selfName();
     }
-    return component.type.name;
 }
 
 export default class CardLayout extends React.Component {
@@ -88,10 +95,10 @@ export default class CardLayout extends React.Component {
     }
 
     componentDidMount = () => {
-        this.inputNumber = this.findOne(this, CardInputNumber);
-        this.inputExpMm = this.findOne(this, CardInputExpMm);
+       	this.inputNumber = this.findOne(this, CardInputNumber);
+   	    this.inputExpMm = this.findOne(this, CardInputExpMm);
         this.inputExpYy = this.findOne(this, CardInputExpYy);
-        this.inputCvv = this.findOne(this, CardInputCvv);
+       	this.inputCvv = this.findOne(this, CardInputCvv);
     }
 
     render() {
@@ -120,7 +127,11 @@ export default class CardLayout extends React.Component {
             root.props.children.forEach((child) => {
                 const childName = getComponentName(child);
                 if (childName == componentName) {
-                    array.push(child._owner._instance.refs[child.ref]);
+                	if (child._owner._instance) {
+                    	array.push(child._owner._instance.refs[child.ref]);
+                    } else {
+                    	array.push(child._owner.stateNode.refs[child.ref]);
+                    }
                     //may not always work.
                     //here should be better way to get view instance in rendering tree.
                 }
