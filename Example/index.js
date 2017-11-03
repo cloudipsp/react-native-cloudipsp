@@ -94,9 +94,9 @@ class ExampleApp extends React.Component {
                     ref="cloudipspWebView"
                     decelerationRate="normal"
                     onError={(error) => {
-                        console.log('webViewError:'+ JSON.stringify(error));
+                        console.log('webViewError:' + JSON.stringify(error));
                     }}
-                    style={{flex:1}}
+                    style={{flex: 1}}
                 />
             );
         } else {
@@ -111,7 +111,7 @@ class ExampleApp extends React.Component {
         } else {
             return (<ScrollView style={{flex: 1}}>
                 <View
-                    style={{padding:20, flex: 1}}>
+                    style={{padding: 20, flex: 1}}>
                     <TouchableOpacity onPress={() => {
                         this.setState({mode: 'entry'});
                     }}>
@@ -126,19 +126,19 @@ class ExampleApp extends React.Component {
                         maxLength={7}
                         keyboardType='numeric'
                         onChangeText={(text) => {
-                                this.setState({amount:text});
-                            }}
+                            this.setState({amount: text});
+                        }}
                         onSubmitEditing={(event) => {
-                                this.refs.inputEmail.focus();
-                            }}
+                            this.refs.inputEmail.focus();
+                        }}
                         style={styles.simpleTextInput}
                     />
                     <Text style={styles.simpleText}>Currency:</Text>
                     <Picker
                         selectedValue={this.state.ccy}
                         onValueChange={(value) => {
-                                this.setState({ccy:value});
-                            }}>
+                            this.setState({ccy: value});
+                        }}>
 
                         <Picker.Item label="UAH" value="UAH"/>
                         <Picker.Item label="USD" value="USD"/>
@@ -152,11 +152,11 @@ class ExampleApp extends React.Component {
                         value={this.state.email}
                         keyboardType='email-address'
                         onChangeText={(text) => {
-                                this.setState({email:text});
-                            }}
+                            this.setState({email: text});
+                        }}
                         onSubmitEditing={(event) => {
-                                this.refs.inputDescription.focus();
-                            }}
+                            this.refs.inputDescription.focus();
+                        }}
                         style={styles.simpleTextInput}
                     />
                     <Text style={styles.simpleText}>Description:</Text>
@@ -164,11 +164,11 @@ class ExampleApp extends React.Component {
                         ref="inputDescription"
                         value={this.state.description}
                         onChangeText={(text) => {
-                                this.setState({description:text});
-                            }}
+                            this.setState({description: text});
+                        }}
                         onSubmitEditing={(event) => {
-                                this.refs.cardInput.focus();
-                            }}
+                            this.refs.cardInput.focus();
+                        }}
                         style={styles.simpleTextInput}
                     />
                     {this.renderCardForm()}
@@ -178,7 +178,7 @@ class ExampleApp extends React.Component {
     }
 
     renderModes() {
-        return (<View style={{flex:1, alignItems: 'center', justifyContent: 'center'}}>
+        return (<View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
             <View>
                 <TouchableOpacity
                     onPress={() => {
@@ -213,59 +213,78 @@ class ExampleApp extends React.Component {
                         this.pay(this.refs.cardInput);
                     }}>
                         <Text
-                            style={{textAlign:'center', marginTop : 12, borderWidth: 1, borderColor: '#999999',}}>Pay</Text>
+                            style={{
+                                textAlign: 'center',
+                                marginTop: 12,
+                                borderWidth: 1,
+                                borderColor: '#999999',
+                            }}>Pay</Text>
                     </TouchableOpacity>
                 </View>);
         } else {
-            return (<CardLayout ref='cardLayout'>
-                <Text style={{marginVertical: 20}}>Card form layout. Cvv and expirity field were swapped</Text>
-                <Text
-                    onPress={() => {
-                        this.refs.cardLayout.test();
-                    }}>
-                    Card Number:
-                </Text>
-                <CardFieldNumber
-                    ref="inputNumber"
-                    onSubmitEditing={() => {
-                        this.refs.inputCvv.focus();
-                    }}
-                />
-                <Text style={this.props.textStyle}>CVV:</Text>
-                <CardFieldCvv
-                    ref="inputCvv"
-                    onSubmitEditing={() => {
+            return (
+                <CardLayout
+                    ref='cardLayout'
+                    inputNumber={() => this.refs.inputNumber}
+                    inputExpMm={() => this.refs.inputMm}
+                    inputExpYy={() => this.refs.inputYy}
+                    inputCvv={() => this.refs.inputCvv}
+                >
+                    <Text style={{marginVertical: 20}}>Card form layout. Cvv and expirity field were swapped</Text>
+                    <Text
+                        onPress={() => {
+                            this.refs.cardLayout.test();
+                        }}>
+                        Card Number:
+                    </Text>
+                    <CardFieldNumber
+                        ref="inputNumber"
+                        style={styles.simpleTextInput}
+                        onSubmitEditing={() => {
+                            this.refs.inputCvv.focus();
+                        }}
+                    />
+                    <Text style={[this.props.textStyle, {marginTop: 10}]}>CVV:</Text>
+                    <CardFieldCvv
+                        ref="inputCvv"
+                        style={styles.simpleTextInput}
+                        onSubmitEditing={() => {
                             this.refs.inputMm.focus();
-                    }}
-                />
-                <Text style={this.props.textStyle}>Expiry:</Text>
-                <View style={{flexDirection: 'row'}}>
-                    <CardFieldExpMm
-                        ref="inputMm"
-                        style={{flex: 1}}
-                        placeholder='MM'
-                        onSubmitEditing={() => {
-                            this.refs.inputYy.focus();
                         }}
                     />
-                    <CardFieldExpYy
-                        ref="inputYy"
-                        style={{flex: 1}}
-                        placeholder='YY'
-                        onSubmitEditing={() => {
-                            if (this.props.onCompletion != undefined) {
-                                this.props.onCompletion(this);
-                            }
-                        }}
-                    />
-                </View>
-                <TouchableOpacity onPress={() => {
+                    <Text style={[this.props.textStyle, {marginTop: 10}]}>Expiry:</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <CardFieldExpMm
+                            ref="inputMm"
+                            style={[{flex: 1}, styles.simpleTextInput]}
+                            placeholder='MM'
+                            onSubmitEditing={() => {
+                                this.refs.inputYy.focus();
+                            }}
+                        />
+                        <CardFieldExpYy
+                            ref="inputYy"
+                            style={[{flex: 1}, styles.simpleTextInput]}
+                            placeholder='YY'
+                            onSubmitEditing={() => {
+                                if (this.props.onCompletion != undefined) {
+                                    this.props.onCompletion(this);
+                                }
+                            }}
+                        />
+                    </View>
+                    <TouchableOpacity onPress={() => {
                         this.pay(this.refs.cardLayout);
                     }}>
-                    <Text
-                        style={{textAlign:'center', marginTop : 12, borderWidth: 1, borderColor: '#999999'}}>Pay</Text>
-                </TouchableOpacity>
-            </CardLayout>);
+                        <Text
+                            style={{
+                                textAlign: 'center',
+                                marginTop: 12,
+                                borderWidth: 1,
+                                borderColor: '#999999'
+                            }}>Pay</Text>
+                    </TouchableOpacity>
+                </CardLayout>);
         }
     }
 }

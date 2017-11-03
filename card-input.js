@@ -35,10 +35,14 @@ export class CardInput extends React.Component {
         return (
             <CardLayout
                 ref='cardLayout'
+                inputNumber={() => this.refs.inputNumber}
+                inputExpMm={() => this.refs.inputMm}
+                inputExpYy={() => this.refs.inputYy}
+                inputCvv={() => this.refs.inputCvv}
             >
                 <Text
                     style={this.props.textStyle}
-                    onPress={this.props.debug?this.test:undefined}>
+                    onPress={this.props.debug ? this.test : undefined}>
                     Card Number:
                 </Text>
                 <CardInputNumber
@@ -64,7 +68,7 @@ export class CardInput extends React.Component {
                         onSubmitEditing={() => {
                             this.refs.inputCvv.focus();
                         }}
-                        style={[{flex: 1}, this.props.textInputStyle]} />
+                        style={[{flex: 1}, this.props.textInputStyle]}/>
                 </View>
                 <Text style={this.props.textStyle}>CVV:</Text>
                 <CardInputCvv

@@ -10,23 +10,22 @@ import CardInputExpMm from './card-field-exp-mm';
 import CardInputExpYy from './card-field-exp-yy';
 import CardInputCvv from './card-field-cvv';
 
-function getComponentName(component) {
-	if (component.type) {
-		if (component.type.name) {
-			return component.type.name;
-		}
-		if (component.type.displayName) {
-			return component.type.displayName;
-		}
-	}
-    if (component._selfName) {
-        return component._selfName();
-    }
-}
-
 export default class CardLayout extends React.Component {
     constructor(props) {
         super(props);
+
+        if (!props.inputNumber || typeof props.inputNumber !== 'function') {
+            throw new Error('inputNumber prop is required');
+        }
+        if (!props.inputExpMm || typeof props.inputExpMm !== 'function') {
+            throw new Error('inputExpMm prop is required');
+        }
+        if (!props.inputExpYy || typeof props.inputExpYy !== 'function') {
+            throw new Error('inputExpYy prop is required');
+        }
+        if (!props.inputCvv || typeof props.inputCvv !== 'function') {
+            throw new Error('inputCvv prop is required');
+        }
 
         this.displayedCard = undefined;
     }
@@ -95,10 +94,10 @@ export default class CardLayout extends React.Component {
     }
 
     componentDidMount = () => {
-       	this.inputNumber = this.findOne(this, CardInputNumber);
-   	    this.inputExpMm = this.findOne(this, CardInputExpMm);
-        this.inputExpYy = this.findOne(this, CardInputExpYy);
-       	this.inputCvv = this.findOne(this, CardInputCvv);
+        this._pullInput('inputNumber', CardInputNumber);
+        this._pullInput('inputExpMm', CardInputExpMm);
+        this._pullInput('inputExpYy', CardInputExpYy);
+        this._pullInput('inputCvv', CardInputCvv);
     }
 
     render() {
@@ -108,35 +107,22 @@ export default class CardLayout extends React.Component {
             </View>);
     }
 
-    findOne = (root, component) => {
-        const componentName = component.getInputName();
-        const array = [];
-        this.find(root, componentName, array);
-        if (array.length == 0) {
-            throw new Error(this.constructor.name + ' should contains ' + componentName);
+    _pullInput = (input, component) => {
+        let instance = this.props[input]();
+        if (!instance) {
+            throw new Error('Missed result value for "' + input + '"');
         }
-        if (array.length > 1) {
-            throw new Error(this.constructor.name + ' should contains only one view ' + componentName+'. '+
-                'Now here '+array.length +' instances of '+componentName+'.');
+        if (!instance._selfName) {
+            throw new Error('Invalid component for "' + input + '"');
         }
-        return array[0];
-    }
-
-    find = (root, componentName, array) => {
-        if (root.props != undefined && Array.isArray(root.props.children)) {
-            root.props.children.forEach((child) => {
-                const childName = getComponentName(child);
-                if (childName == componentName) {
-                	if (child._owner._instance) {
-                    	array.push(child._owner._instance.refs[child.ref]);
-                    } else {
-                    	array.push(child._owner.stateNode.refs[child.ref]);
-                    }
-                    //may not always work.
-                    //here should be better way to get view instance in rendering tree.
-                }
-                this.find(child, componentName, array);
-            });
+        let selfName = instance._selfName();
+        if (!selfName) {
+            throw new Error('Missed result value for "' + input + '"');
         }
+        let componentName = component.getInputName();
+        if (componentName != selfName) {
+            throw new Error('Unexpected component "' + selfName + '" was set at "' + componentName + '" place');
+        }
+        this[input] = instance;
     }
 }

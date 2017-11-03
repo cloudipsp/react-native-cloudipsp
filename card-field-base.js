@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    View,
     TextInput
 } from 'react-native';
 
@@ -34,7 +35,7 @@ export default class CardFieldBase extends React.Component {
     }
 
     render() {
-        return (<TextInput
+        return (<View><TextInput
             ref='input'
 
             {...this.props}
@@ -49,6 +50,6 @@ export default class CardFieldBase extends React.Component {
             onChangeText={(text) => {
                 this.setState({__text__: text});
             }}
-        />);
+        /></View>);
     }
 }
