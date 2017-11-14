@@ -16,29 +16,31 @@ export class CardInput extends React.Component {
     }
 
     getCard = () => {
-        return this.refs.cardLayout.getCard();
+        return this.cardLayout.getCard();
     }
 
     showCard = (card) => {
-        this.refs.cardLayout.showCard(card);
+        this.cardLayout.showCard(card);
     }
 
     test = () => {
-        this.refs.cardLayout.test();
+        this.cardLayout.test();
     }
 
     focus = () => {
-        this.refs.inputNumber.focus();
+        this.inputNumber.focus();
     }
 
     render() {
         return (
             <CardLayout
-                ref='cardLayout'
-                inputNumber={() => this.refs.inputNumber}
-                inputExpMm={() => this.refs.inputMm}
-                inputExpYy={() => this.refs.inputYy}
-                inputCvv={() => this.refs.inputCvv}
+                ref={(ref) => {
+                    this.cardLayout = ref
+                }}
+                inputNumber={() => this.inputNumber}
+                inputExpMm={() => this.inputMm}
+                inputExpYy={() => this.inputYy}
+                inputCvv={() => this.inputCvv}
             >
                 <Text
                     style={this.props.textStyle}
@@ -46,33 +48,41 @@ export class CardInput extends React.Component {
                     Card Number:
                 </Text>
                 <CardInputNumber
-                    ref="inputNumber"
+                    ref={(ref) => {
+                        this.inputNumber = ref
+                    }}
                     onSubmitEditing={() => {
-                        this.refs.inputMm.focus();
+                        this.inputMm.focus();
                     }}
                     style={this.props.textInputStyle}
                 />
                 <Text style={this.props.textStyle}>Expiry:</Text>
                 <View style={{flexDirection: 'row'}}>
                     <CardInputExpMm
-                        ref="inputMm"
+                        ref={(ref) => {
+                            this.inputMm = ref
+                        }}
                         placeholder='MM'
                         onSubmitEditing={() => {
-                            this.refs.inputYy.focus();
+                            this.inputYy.focus();
                         }}
                         style={[{flex: 1}, this.props.textInputStyle]}
                     />
                     <CardInputExpYy
-                        ref="inputYy"
+                        ref={(ref) => {
+                            this.inputYy = ref
+                        }}
                         placeholder='YY'
                         onSubmitEditing={() => {
-                            this.refs.inputCvv.focus();
+                            this.inputCvv.focus();
                         }}
                         style={[{flex: 1}, this.props.textInputStyle]}/>
                 </View>
                 <Text style={this.props.textStyle}>CVV:</Text>
                 <CardInputCvv
-                    ref="inputCvv"
+                    ref={(ref) => {
+                        this.inputCvv = ref
+                    }}
                     onSubmitEditing={() => {
                         if (this.props.onCompletion != undefined) {
                             this.props.onCompletion(this);
