@@ -109,7 +109,11 @@ class ExampleApp extends React.Component {
         if (this.state.mode == 'entry') {
             return this.renderModes();
         } else {
-            return (<ScrollView style={{flex: 1}}>
+            return (<ScrollView
+                style={{flex: 1}}
+                keyboardDismissMode={'none'}
+                keyboardShouldPersistTaps={'always'}
+            >
                 <View
                     style={{padding: 20, flex: 1}}>
                     <TouchableOpacity onPress={() => {
@@ -253,7 +257,7 @@ class ExampleApp extends React.Component {
                         }}
                     />
                     <Text style={[this.props.textStyle, {marginTop: 10}]}>Expiry:</Text>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row', flex: 1}}>
                         <CardFieldExpMm
                             ref="inputMm"
                             style={[{flex: 1}, styles.simpleTextInput]}

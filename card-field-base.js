@@ -7,7 +7,7 @@ import {
 export default class CardFieldBase extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {__text__: '', __enabled__: true};
+        this.state = {__text__: '', __enabled__: true, __max_length__: this._maxLength()};
     }
 
     _setEnable = (value) => {
@@ -26,6 +26,10 @@ export default class CardFieldBase extends React.Component {
         throw new Error('not implemented');
     }
 
+    _setMaxLength = (value) => {
+        this.setState({__max_length__: value});
+    }
+
     _isSecure() {
         return false;
     }
@@ -35,12 +39,12 @@ export default class CardFieldBase extends React.Component {
     }
 
     render() {
-        return (<View><TextInput
+        return (<TextInput
             ref='input'
 
             {...this.props}
 
-            maxLength={this._maxLength()}
+            maxLength={this.state.__max_length__}
             secureTextEntry={this._isSecure()}
             multiline={false}
             editable={this.state.__enabled__}
@@ -48,8 +52,11 @@ export default class CardFieldBase extends React.Component {
 
             value={this.state.__text__}
             onChangeText={(text) => {
+                if (this.__onChangeText__) {
+                    this.__onChangeText__(text);
+                }
                 this.setState({__text__: text});
             }}
-        /></View>);
+        />);
     }
 }

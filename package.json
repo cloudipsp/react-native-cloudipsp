@@ -1,6 +1,6 @@
 {
   "name": "react-native-cloudipsp",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Library for accepting payments directly from android application's clients.",
   "main": "index.js",
   "scripts": {

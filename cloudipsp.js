@@ -1,3 +1,5 @@
+import {isCvv4Length} from './cvv-utils';
+
 export class Currency {
     constructor(code:string) {
         this.code = code;
@@ -179,7 +181,7 @@ export class Card {
     }
 
     __isValidExpireYearValue__ = (yy) => {
-        return yy >= 17 && yy <= 99;
+        return yy >= 18 && yy <= 99;
     }
 
     isValidExpireYear = () => {
@@ -210,7 +212,11 @@ export class Card {
 
     isValidCvv = () => {
         let cvv = this.__getCvv__();
-        return cvv.length === 3 || cvv.length === 4;
+        if (isCvv4Length(this.__getCardNumber__())) {
+            return cvv.length === 4;
+        } else {
+            return cvv.length === 3;
+        }
     }
 
     isValidCard = () => {

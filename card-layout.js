@@ -9,6 +9,7 @@ import CardInputNumber from './card-field-number';
 import CardInputExpMm from './card-field-exp-mm';
 import CardInputExpYy from './card-field-exp-yy';
 import CardInputCvv from './card-field-cvv';
+import {isCvv4Length} from './cvv-utils';
 
 export default class CardLayout extends React.Component {
     constructor(props) {
@@ -98,6 +99,10 @@ export default class CardLayout extends React.Component {
         this._pullInput('inputExpMm', CardInputExpMm);
         this._pullInput('inputExpYy', CardInputExpYy);
         this._pullInput('inputCvv', CardInputCvv);
+
+        this.inputNumber.__onChangeText__ = (text) => {
+            this.inputCvv._setCvv4(isCvv4Length(text));
+        };
     }
 
     render() {
