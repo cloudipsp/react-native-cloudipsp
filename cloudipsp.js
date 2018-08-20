@@ -15,6 +15,7 @@ Currency.USD = new Currency('USD');
 Currency.RUB = new Currency('RUB');
 Currency.EUR = new Currency('EUR');
 Currency.GBP = new Currency('GBP');
+Currency.KZT = new Currency('KZT');
 
 export class Lang {
     constructor(name:string) {
@@ -51,13 +52,17 @@ function req(name:string) {
 
 export class Order {
     constructor(amount:number = req('amount'),
-                currency:Currency = req('currency'),
+                currency:Currency|string = req('currency'),
                 orderId:string = req('orderId'),
                 description:string = req('description'),
                 email:string) {
 
         this.amount = amount;
-        this.currency = currency;
+        if (typeof currency === 'string') {
+            this.currency = currency;
+        } else {
+            this.currency = currency.code;
+        }
         this.orderId = orderId;
         this.description = description;
         this.email = email;
@@ -229,7 +234,7 @@ export class Receipt {
     cardBin:number;
     amount:number;
     paymentId:number;
-    currency:Currency;
+    currency:string;
     status:string;
     transactionType:string;
     senderCellPhone:string;
@@ -243,7 +248,7 @@ export class Receipt {
     recTokenLifeTime:Date;
     reversalAmount:number;
     settlementAmount:number;
-    settlementCurrency:Currency;
+    settlementCurrency:string;
     settlementDate:Date;
     eci:number;
     fee:number;
@@ -257,7 +262,7 @@ export class Receipt {
                 cardBin:number,
                 amount:number,
                 paymentId:number,
-                currency:Currency,
+                currency:string,
                 status:string,
                 transactionType:string,
                 senderCellPhone:string,
@@ -271,7 +276,7 @@ export class Receipt {
                 recTokenLifeTime:Date,
                 reversalAmount:number,
                 settlementAmount:number,
-                settlementCurrency:Currency,
+                settlementCurrency:string,
                 settlementDate:Date,
                 eci:number,
                 fee:number,
@@ -316,23 +321,11 @@ export class Receipt {
         } catch (e) {
             recTokenLifeTime = undefined;
         }
-        var settlementCcy;
-        try {
-            settlementCcy = Currency[orderData.settlement_currency];
-        } catch (e) {
-            settlementCcy = undefined;
-        }
         var settlementDate;
         try {
             recTokenLifeTime = Date.parse(orderData.rectoken_lifetime);
         } catch (e) {
             recTokenLifeTime = undefined;
-        }
-        var actualCcy;
-        try {
-            actualCcy = Currency[orderData.actual_currency];
-        } catch (e) {
-            actualCcy = undefined;
         }
 
         let receipt = new Receipt
@@ -341,7 +334,7 @@ export class Receipt {
             orderData.card_bin,
             Number(orderData.amount),
             orderData.payment_id,
-            Currency[orderData.currency],
+            orderData.currency,
             orderData.order_status,
             orderData.tran_type,
             orderData.sender_cell_phone,
@@ -355,12 +348,12 @@ export class Receipt {
             recTokenLifeTime,
             orderData.reversal_amount,
             orderData.settlement_amount,
-            settlementCcy,
+            orderData.settlement_currency,
             settlementDate,
             orderData.eci,
             orderData.fee,
             orderData.actual_amount,
-            actualCcy,
+            orderData.actual_currency,
             orderData.payment_system,
             orderData.verification_status,
             orderData.signature
@@ -443,7 +436,7 @@ export class Cloudipsp {
         let rqBody = {};
         rqBody.merchant_id = this.__merchantId__;
         rqBody.amount = String(order.amount);
-        rqBody.currency = order.currency.code;
+        rqBody.currency = order.currency;
         rqBody.order_id = order.orderId;
         rqBody.order_desc = order.description;
         rqBody.email = order.email;

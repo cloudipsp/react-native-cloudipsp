@@ -48,7 +48,7 @@ class ExampleApp extends React.Component {
 
     test = () => {
         this.setState({amount: '1', ccy: 'UAH', email: 'valik.beregovoy@gmail.com', description: 'test :)'}, () => {
-            this.pay();
+            this.pay(this.refs.cardInput);
         });
         this.refs.cardInput.test();
     }
@@ -60,7 +60,7 @@ class ExampleApp extends React.Component {
         });
 
 
-        let order = new Order(Number(this.state.amount), Currency[this.state.ccy], 'rn_' + Math.random(), this.state.description, this.state.email);
+        let order = new Order(Number(this.state.amount), this.state.ccy, 'rn_' + Math.random(), this.state.description, this.state.email);
         let card = cardForm.getCard();
 
         console.log('this: ' + JSON.stringify(card));
@@ -149,6 +149,7 @@ class ExampleApp extends React.Component {
                         <Picker.Item label="EUR" value="EUR"/>
                         <Picker.Item label="GBP" value="GBP"/>
                         <Picker.Item label="RUR" value="RUR"/>
+                        <Picker.Item label="KZT" value="KZT"/>
                     </Picker>
                     <Text style={styles.simpleText}>Email:</Text>
                     <TextInput
