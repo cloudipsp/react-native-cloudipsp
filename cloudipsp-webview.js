@@ -7,10 +7,16 @@ import {
 import {Receipt} from './cloudipsp'
 
 const addViewportMeta = `(${String(() => {
-  const meta = document.createElement('meta');
-  meta.setAttribute('content', 'width=device-width, user-scalable=0,');
-  meta.setAttribute('name', 'viewport');
-  document.getElementsByTagName('head')[0].appendChild(meta);
+    const meta = document.createElement('meta');
+    meta.setAttribute('content', 'width=device-width, user-scalable=0,');
+    meta.setAttribute('name', 'viewport');
+    const elementHead = document.getElementsByTagName('head');
+    if (elementHead) {
+        elementHead[0].appendChild(meta);
+    } else {
+        const head = document.createElement('head');
+        head.appendChild(meta);
+    }
 })})();`;
 
 export class CloudipspWebView extends React.Component {
