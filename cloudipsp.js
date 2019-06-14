@@ -385,7 +385,43 @@ export class Cloudipsp {
         this.__cloudipspView__ = cloudipspView;
     }
 
-    pay = (card:Card = req('card'), order:Order = req('order')) => {
+    checkoutComplete = (checkout, token) => {
+        if (checkout.within_3ds === false) {
+            return this.__receipt__(token);
+        } else {
+            var body;
+            var contentType;
+            let sendData = checkout.sendData;
+            if (sendData.PaReq === '') {
+                body = JSON.stringify(sendData);
+                contentType = 'application/json';
+            } else {
+                body = 'MD=' + encodeURIComponent(sendData.MD) +
+                    '&PaReq=' + encodeURIComponent(sendData.PaReq) +
+                    '&TermUrl=' + encodeURIComponent(sendData.TermUrl);
+                contentType = 'application/x-www-form-urlencoded'
+            }
+            return fetch(checkout.url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': contentType,
+                    'User-Agent': 'React-Native'
+                },
+                body: body
+            })
+                .then((response) => {
+                    return response.text();
+                })
+                .then((html) => {
+                    return this.__cloudipspView__((cloudipspView) => {
+                        return cloudipspView.__confirm__(checkout.url, html);
+                    });
+                });
+        }
+    }
+
+    pay = (card:Card = req('card'), order:Order = req('order'), token:string) => {
         if (! card.isValidCard()) {
             throw new Error('Card is not valid');
         }
@@ -393,43 +429,17 @@ export class Cloudipsp {
         return this.__getToken__(order)
             .then((token) => {
                 return this.__checkout__(token, card, order.email)
-                    .then((checkout) => {
-                        console.log('checkout: ' + JSON.stringify(checkout));
-                        if (checkout.within_3ds === false) {
-                            return this.__receipt__(token);
-                        } else {
-                            var body;
-                            var contentType;
-                            let sendData = checkout.sendData;
-                            if (sendData.PaReq === '') {
-                                body = JSON.stringify(sendData);
-                                contentType = 'application/json';
-                            } else {
-                                body = 'MD=' + encodeURIComponent(sendData.MD) +
-                                    '&PaReq=' + encodeURIComponent(sendData.PaReq) +
-                                    '&TermUrl=' + encodeURIComponent(sendData.TermUrl);
-                                contentType = 'application/x-www-form-urlencoded'
-                            }
-                            return fetch(checkout.url, {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': contentType,
-                                    'User-Agent': 'React-Native'
-                                },
-                                body: body
-                            })
-                                .then((response) => {
-                                    return response.text();
-                                })
-                                .then((html) => {
-                                    return this.__cloudipspView__((cloudipspView) => {
-                                        return cloudipspView.__confirm__(checkout.url, html);
-                                    });
-                                });
-                        }
-                    });
+                    .then((checkout) => this.checkoutComplete(checkout, token));
             });
+    }
+
+    payToken = (card:Card = req('card'), token:string = req('token'))  => {
+        if (! card.isValidCard()) {
+            throw new Error('Card is not valid');
+        }
+
+        return this.__checkout__(token, card)
+                .then((checkout) => this.checkoutComplete(checkout, token));
     }
 
     __getToken__ = (order:Order) => {
