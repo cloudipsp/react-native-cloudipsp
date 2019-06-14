@@ -6,6 +6,13 @@ import {
 
 import {Receipt} from './cloudipsp'
 
+const addViewportMeta = `(${String(() => {
+  const meta = document.createElement('meta');
+  meta.setAttribute('content', 'width=device-width, user-scalable=0,');
+  meta.setAttribute('name', 'viewport');
+  document.getElementsByTagName('head')[0].appendChild(meta);
+})})();`;
+
 export class CloudipspWebView extends React.Component {
     constructor(props) {
         super(props);
@@ -36,6 +43,7 @@ export class CloudipspWebView extends React.Component {
                     domStorageEnabled={true}
                     scalesPageToFit={true}
                     source={{ baseUrl : this.state.baseUrl, html : this.state.html}}
+                    injectedJavaScript={addViewportMeta}
                     onLoadStart={(event) => {
                         if (this.onSuccess !== undefined) {
                             let url = event.nativeEvent.url;
