@@ -8,6 +8,6 @@
   "dependencies": {
     "react": "16.8.3",
     "react-native": "0.59.9",
-    "react-native-cloudipsp": "0.20.0"
+    "react-native-cloudipsp": "0.2.2"
   }
 }
