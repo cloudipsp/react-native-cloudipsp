@@ -1,59 +1,43 @@
-apply plugin: "com.android.application"
+apply plugin: 'com.android.application'
 
-import com.android.build.OutputFile
+project.ext.react = [
+        entryFile: 'index.js'
+]
 
-apply from: "../../node_modules/react-native/react.gradle"
-
-def enableSeparateBuildPerCPUArchitecture = false
-def enableProguardInReleaseBuilds = false
+apply from: '../../node_modules/react-native/react.gradle'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.cloudipsp"
-        minSdkVersion 16
-        targetSdkVersion 22
+        applicationId 'com.cloudipsp.example'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
         ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
-    }
-    splits {
-        abi {
-            reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false
-            include "armeabi-v7a", "x86"
+            abiFilters 'armeabi-v7a', 'x86'
         }
     }
     buildTypes {
-        release {
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        debug {
+            debuggable true
+            minifyEnabled false
         }
-    }
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def versionCodes = ["armeabi-v7a":1, "x86":2]
-            def abi = output.getFilter(OutputFile.ABI)
-            if (abi != null) {
-                output.versionCodeOverride =
-                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
-            }
+
+        release {
+            debuggable false
+            minifyEnabled false
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:25.0.1"
-    compile "com.facebook.react:react-native:+"
-}
+    //noinspection GradleDynamicVersion
+    implementation 'com.facebook.react:react-native:+'  // From node_modules
+    implementation project(':react-native-cloudipsp')
 
-task copyDownloadableDepsToLibs(type: Copy) {
-  from configurations.compile
-  into 'libs'
+    implementation 'com.google.android.gms:play-services-base:16.0.1'
+    implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 }

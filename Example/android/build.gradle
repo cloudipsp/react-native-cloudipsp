@@ -1,9 +1,18 @@
 buildscript {
+    ext {
+        buildToolsVersion = '28.0.3'
+        minSdkVersion = 16
+        compileSdkVersion = 28
+        targetSdkVersion = 28
+    }
     repositories {
+        google()
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.google.gms:google-services:4.3.0'
     }
 }
 
@@ -11,6 +20,7 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
+        google()
         maven {
             url "$rootDir/../node_modules/react-native/android"
         }

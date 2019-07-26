@@ -1,4 +1,4 @@
-package com.cloudipsp;
+package com.cloudipsp.example;
 
 import com.facebook.react.ReactActivity;
 
