@@ -1,6 +1,6 @@
 {
   "name": "react-native-cloudipsp",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Library for accepting payments directly from android application's clients.",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,7 @@
     "payment"
   ],
   "peerDependencies": {
-    "react-native": ">=0.29",
+    "react-native": ">=0.60.0",
     "react-native-webview": ">=6.3.1"
   },
   "author": "Maxim Kozenko",
