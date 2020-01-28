@@ -3,7 +3,9 @@ package com.cloudipsp.rn;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
+import android.webkit.CookieManager;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Promise;
@@ -57,6 +59,11 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
     }
 
     @ReactMethod
+    public void addCookies(String host, String cookie) {
+        CookieManager.getInstance().setCookie(host, cookie);
+    }
+
+    @ReactMethod
     public void supportsGooglePay(Promise promise) {
         boolean result = false;
         if (isGooglePayRuntimeProvided()) {
@@ -86,20 +93,17 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
                                 .setCurrencyCode(currency)
                                 .build())
                 .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
-                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
                 .setCardRequirements(
                         CardRequirements.newBuilder()
                                 .addAllowedCardNetworks(Arrays.asList(
-                                        WalletConstants.CARD_NETWORK_AMEX,
-                                        WalletConstants.CARD_NETWORK_DISCOVER,
                                         WalletConstants.CARD_NETWORK_VISA,
                                         WalletConstants.CARD_NETWORK_MASTERCARD))
                                 .build())
                 .setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters.newBuilder()
                         .setPaymentMethodTokenizationType(
-                                WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_DIRECT)
-                        .addParameter("protocolVersion", tokenizationSpecification.getMap("parameters").getString("protocolVersion"))
-                        .addParameter("publicKey", tokenizationSpecification.getMap("parameters").getString("publicKey"))
+                                WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
+                        .addParameter("gatewayMerchantId", tokenizationSpecification.getMap("parameters").getString("gatewayMerchantId"))
+                        .addParameter("gateway", tokenizationSpecification.getMap("parameters").getString("gateway"))
                         .build())
                 .build();
 
@@ -107,9 +111,9 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
         final PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,
                 new Wallet.WalletOptions.Builder()
                         .setEnvironment(
-                                config.getString("environment").equals("FIRE")
-                                        ? WalletConstants.ENVIRONMENT_TEST
-                                        : WalletConstants.ENVIRONMENT_PRODUCTION
+                                config.getString("environment").equals("PRODUCTION")
+                                        ? WalletConstants.ENVIRONMENT_PRODUCTION
+                                        : WalletConstants.ENVIRONMENT_TEST
                         )
                         .build());
         AutoResolveHelper.resolveTask(

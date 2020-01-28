@@ -83,23 +83,39 @@ RCT_EXPORT_METHOD(applePayComplete:(BOOL)success
                           rejecter:(RCTPromiseRejectBlock)rejecter)
 {
     self.applePayCompleteResolver = resolve;
-    dispatch_async(dispatch_get_main_queue(), ^{
+    if (self.applePayCallback) {
         if (@available(iOS 11.0, *)) {
-            if (success) {
-                self.applePayCallback([[PKPaymentAuthorizationResult alloc] initWithStatus:PKPaymentAuthorizationStatusSuccess errors:nil]);
-            } else {
-                self.applePayCallback([[PKPaymentAuthorizationResult alloc] initWithStatus:PKPaymentAuthorizationStatusFailure errors:nil]);
-            }
+            void (^callback)(PKPaymentAuthorizationResult *) = self.applePayCallback;
             self.applePayCallback = nil;
+        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (success) {
+                    callback([[PKPaymentAuthorizationResult alloc] initWithStatus:PKPaymentAuthorizationStatusSuccess errors:nil]);
+                } else {
+                    callback([[PKPaymentAuthorizationResult alloc] initWithStatus:PKPaymentAuthorizationStatusFailure errors:nil]);
+                }
+            });
         }
-    });
+    }
 }
 
 - (void)paymentAuthorizationViewControllerDidFinish:(PKPaymentAuthorizationViewController *)controller {
-    [controller dismissViewControllerAnimated:YES completion:^{
-        self.applePayCompleteResolver(nil);
-        self.applePayCompleteResolver = nil;
-    }];
+    RCTPromiseResolveBlock resolver = self.applePayCompleteResolver;
+    self.applePayCompleteResolver = nil;
+
+    if (resolver == nil) {
+        RCTPromiseRejectBlock rejecter = self.applePayRejecter;
+        self.applePayResolve = nil;
+        self.applePayRejecter = nil;
+        
+        [controller dismissViewControllerAnimated:YES completion:^{
+            rejecter(@"UserCanceled", @"User canceled ApplePay authentication", nil);
+        }];
+    } else {
+        [controller dismissViewControllerAnimated:YES completion:^{
+            resolver(nil);
+        }];
+    }
 }
 
 - (void)paymentAuthorizationViewController:(PKPaymentAuthorizationViewController *)controller

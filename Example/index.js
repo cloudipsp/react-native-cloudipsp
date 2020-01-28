@@ -64,9 +64,9 @@ class ExampleApp extends React.Component {
 
   test = () => {
     this.setState({ amount: '1', ccy: 'UAH', email: 'example@test.com', description: 'test :)' }, () => {
-      this.pay(this.refs.cardInput);
+      this.pay(this.cardForm);
     });
-    this.refs.cardInput.test();
+    this.cardForm.test();
   };
 
   getOrder = () => {
