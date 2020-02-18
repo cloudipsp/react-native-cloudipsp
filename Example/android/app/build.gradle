@@ -1,8 +1,12 @@
 apply plugin: 'com.android.application'
 
 project.ext.react = [
-        entryFile: 'index.js'
+        entryFile: 'index.js',
+        enableHermes: false
 ]
+
+def jscFlavor = 'org.webkit:android-jsc:+'
+def enableHermes = project.ext.react.get("enableHermes", false);
 
 apply from: '../../node_modules/react-native/react.gradle'
 
@@ -36,8 +40,26 @@ android {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
+    if (enableHermes) {
+        def hermesPath = "../../node_modules/hermes-engine/android/";
+        debugImplementation files(hermesPath + "hermes-debug.aar")
+        releaseImplementation files(hermesPath + "hermes-release.aar")
+    } else {
+        implementation jscFlavor
+    }
+
     implementation project(':react-native-cloudipsp')
 
-    implementation 'com.google.android.gms:play-services-base:16.0.1'
-    implementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
+    implementation 'com.google.android.gms:play-services-wallet:18.0.0'
 }
+
+
+// Run this once to be able to run the application with BUCK
+// puts all compile dependencies into folder libs for BUCK to use
+task copyDownloadableDepsToLibs(type: Copy) {
+    from configurations.compile
+    into 'libs'
+}
+
+apply from: file('../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle'); applyNativeModulesAppBuildGradle(project)
