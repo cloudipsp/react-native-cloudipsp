@@ -27,6 +27,9 @@ import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -79,33 +82,7 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
             promise.reject(new Exception("GooglePay already launched"));
         }
         googlePayPromise = promise;
-
-        final ReadableMap allowedPaymentMethod = config
-                .getArray("allowedPaymentMethods")
-                .getMap(0);
-        final ReadableMap tokenizationSpecification = allowedPaymentMethod.getMap("tokenizationSpecification");
-
-        final PaymentDataRequest request = PaymentDataRequest.newBuilder()
-                .setTransactionInfo(
-                        TransactionInfo.newBuilder()
-                                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                                .setTotalPrice(new BigDecimal(amount).setScale(2).toString())
-                                .setCurrencyCode(currency)
-                                .build())
-                .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
-                .setCardRequirements(
-                        CardRequirements.newBuilder()
-                                .addAllowedCardNetworks(Arrays.asList(
-                                        WalletConstants.CARD_NETWORK_VISA,
-                                        WalletConstants.CARD_NETWORK_MASTERCARD))
-                                .build())
-                .setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters.newBuilder()
-                        .setPaymentMethodTokenizationType(
-                                WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
-                        .addParameter("gatewayMerchantId", tokenizationSpecification.getMap("parameters").getString("gatewayMerchantId"))
-                        .addParameter("gateway", tokenizationSpecification.getMap("parameters").getString("gateway"))
-                        .build())
-                .build();
+        final PaymentDataRequest request = PaymentDataRequest.fromJson(new JSONObject(config.toHashMap()).toString());
 
         final Activity activity = getCurrentActivity();
         final PaymentsClient paymentsClient = Wallet.getPaymentsClient(activity,
@@ -136,14 +113,22 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
         if (resultCode == Activity.RESULT_CANCELED) {
             promise.reject(new Exception("CANCELED"));
         } else if (resultCode == Activity.RESULT_OK) {
-            final PaymentData paymentData = PaymentData.getFromIntent(data);
-            final WritableNativeMap result = new WritableNativeMap();
-            final CardInfo cardInfo = paymentData.getCardInfo();
-            result.putString("description", cardInfo.getCardDescription());
-            result.putString("cardDetails", cardInfo.getCardDetails());
-            result.putString("cardNetwork", cardInfo.getCardNetwork());
-            result.putString("token", paymentData.getPaymentMethodToken().getToken());
-            promise.resolve(result);
+            try {
+                final JSONObject paymentData = new JSONObject(PaymentData.getFromIntent(data).toJson());
+                final JSONObject paymentMethodData = paymentData.getJSONObject("paymentMethodData");
+                final JSONObject info = paymentMethodData.getJSONObject("info");
+
+
+                final WritableNativeMap result = new WritableNativeMap();
+                result.putString("description", paymentMethodData.getString("description"));
+                result.putString("token", paymentMethodData.getJSONObject("tokenizationData").getString("token"));
+                result.putString("cardDetails", info.getString("cardDetails"));
+                result.putString("cardNetwork", info.getString("cardNetwork"));
+                promise.resolve(result);
+            } catch (JSONException e) {
+                Log.w("Cloudipsp", "Unknown wallet result", e);
+                promise.reject(new Exception("INTERNAL_ERROR"));
+            }
         } else {
             promise.reject(new Exception("ERROR"));
         }

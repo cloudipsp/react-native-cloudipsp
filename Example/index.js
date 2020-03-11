@@ -35,13 +35,8 @@ class ExampleApp extends React.Component {
   constructor(props) {
     super(props);
 
-
-    this.cloudipsp = new Cloudipsp(1396424, (payConfirmator) => {
-      this.setState({ webView: 1 });
-      return payConfirmator(this.cloudipspWebView);
-    });
-
     this.state = {
+      merchant: '1396424',
       amount: '1',
       ccy: 'UAH',
       email: 'example@test.com',
@@ -61,13 +56,6 @@ class ExampleApp extends React.Component {
         console.log('SupportsGooglePay: ', result);
       });
   }
-
-  test = () => {
-    this.setState({ amount: '1', ccy: 'UAH', email: 'example@test.com', description: 'test :)' }, () => {
-      this.pay(this.cardForm);
-    });
-    this.cardForm.test();
-  };
 
   getOrder = () => {
     return new Order(
@@ -93,7 +81,8 @@ class ExampleApp extends React.Component {
     } else if (!card.isValidCvv()) {
       Alert.alert('Warning', 'CVV is not valid');
     } else {
-      this.cloudipsp.pay(card, order)
+      const cloudipsp = this.cloudipsp();
+      cloudipsp.pay(card, order)
         .then((receipt) => {
           this.setState({ webView: undefined });
           Alert.alert('Transaction Completed :)', 'Result: ' + receipt.status + '\nPaymentId: ' + receipt.paymentId);
@@ -105,9 +94,17 @@ class ExampleApp extends React.Component {
     }
   };
 
+  cloudipsp = () => {
+    return new Cloudipsp(Number(this.state.merchant), (payConfirmator) => {
+      this.setState({ webView: 1 });
+      return payConfirmator(this.cloudipspWebView);
+    });
+  };
+
   applePay = () => {
+    const cloudipsp = this.cloudipsp();
     const order = this.getOrder();
-    this.cloudipsp.applePay(order)
+    cloudipsp.applePay(order)
       .then((receipt) => {
         this.setState({ webView: undefined });
         Alert.alert('Transaction Completed :)', 'Result: ' + receipt.status + '\nPaymentId: ' + receipt.paymentId);
@@ -119,8 +116,9 @@ class ExampleApp extends React.Component {
   };
 
   googlePay = () => {
+    const cloudipsp = this.cloudipsp();
     const order = this.getOrder();
-    this.cloudipsp.googlePayToken(order)
+    cloudipsp.googlePay(order)
       .then((receipt) => {
         this.setState({ webView: undefined });
         Alert.alert('Transaction Completed :)', 'Result: ' + receipt.status + '\nPaymentId: ' + receipt.paymentId);
@@ -128,6 +126,7 @@ class ExampleApp extends React.Component {
       })
       .catch((error) => {
         console.log('Error: ', error);
+        Alert.alert('Transaction Failure :(', 'Result: ' + error);
       });
   };
 
@@ -167,10 +166,25 @@ class ExampleApp extends React.Component {
             <Text style={styles.simpleText}>{'< Modes'}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={this.test} style={{ marginTop: 20 }}>
-            <Text style={styles.simpleText}>Amount:</Text>
-          </TouchableOpacity>
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.simpleText}>Merchant:</Text>
+          </View>
           <TextInput
+            value={this.state.merchant}
+            keyboardType='numeric'
+            onChangeText={(text) => {
+              this.setState({ merchant: text });
+            }}
+            onSubmitEditing={(event) => {
+              this.refs.inputAmount.focus();
+            }}
+            style={styles.simpleTextInput}
+          />
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.simpleText}>Amount:</Text>
+          </View>
+          <TextInput
+            ref="inputAmount"
             value={this.state.amount}
             maxLength={7}
             keyboardType='numeric'

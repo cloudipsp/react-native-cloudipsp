@@ -24,6 +24,14 @@ android {
             abiFilters 'armeabi-v7a', 'x86'
         }
     }
+    signingConfigs {
+        release {
+            storeFile file('../keystores/release.keystore')
+            storePassword 'Stubstub'
+            keyAlias 'Stub'
+            keyPassword 'Stubstub'
+        }
+    }
     buildTypes {
         debug {
             debuggable true
@@ -33,6 +41,7 @@ android {
         release {
             debuggable false
             minifyEnabled false
+            signingConfig signingConfigs.release
         }
     }
 }
