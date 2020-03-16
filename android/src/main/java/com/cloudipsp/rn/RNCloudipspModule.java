@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -77,7 +78,7 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
     }
 
     @ReactMethod
-    public void googlePay(ReadableMap config, int amount, String currency, Promise promise) {
+    public void googlePay(ReadableMap config, Promise promise) {
         if (googlePayPromise != null) {
             promise.reject(new Exception("GooglePay already launched"));
         }
@@ -113,22 +114,7 @@ public class RNCloudipspModule extends ReactContextBaseJavaModule implements Act
         if (resultCode == Activity.RESULT_CANCELED) {
             promise.reject(new Exception("CANCELED"));
         } else if (resultCode == Activity.RESULT_OK) {
-            try {
-                final JSONObject paymentData = new JSONObject(PaymentData.getFromIntent(data).toJson());
-                final JSONObject paymentMethodData = paymentData.getJSONObject("paymentMethodData");
-                final JSONObject info = paymentMethodData.getJSONObject("info");
-
-
-                final WritableNativeMap result = new WritableNativeMap();
-                result.putString("description", paymentMethodData.getString("description"));
-                result.putString("token", paymentMethodData.getJSONObject("tokenizationData").getString("token"));
-                result.putString("cardDetails", info.getString("cardDetails"));
-                result.putString("cardNetwork", info.getString("cardNetwork"));
-                promise.resolve(result);
-            } catch (JSONException e) {
-                Log.w("Cloudipsp", "Unknown wallet result", e);
-                promise.reject(new Exception("INTERNAL_ERROR"));
-            }
+            promise.resolve(PaymentData.getFromIntent(data).toJson());
         } else {
             promise.reject(new Exception("ERROR"));
         }
