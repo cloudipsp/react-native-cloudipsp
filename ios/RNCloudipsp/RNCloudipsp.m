@@ -39,16 +39,22 @@ RCT_EXPORT_METHOD(applePay:(NSDictionary *)config
     self.applePayResolve = resolve;
     self.applePayRejecter = rejecter;
 
+    NSDictionary* data = [config objectForKey:@"data"];
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
     paymentRequest.countryCode = @"US";
     paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex];
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
-    paymentRequest.merchantIdentifier = [config objectForKey:@"merchantIdentifier"];
+    paymentRequest.merchantIdentifier = [data objectForKey:@"merchantIdentifier"];
     paymentRequest.currencyCode = currency;
     
     NSDecimalNumber *fixedAmount = [[NSDecimalNumber alloc] initWithMantissa:amount exponent:-2 isNegative:NO];
-    PKPaymentSummaryItem *item = [PKPaymentSummaryItem summaryItemWithLabel:about amount:fixedAmount];
-    paymentRequest.paymentSummaryItems = @[item];
+    NSMutableArray *items = [NSMutableArray new];
+    PKPaymentSummaryItem *infoItem = [PKPaymentSummaryItem summaryItemWithLabel:about amount:fixedAmount];
+    [items addObject:infoItem];
+
+    PKPaymentSummaryItem *mainItem = [PKPaymentSummaryItem summaryItemWithLabel: [config objectForKey:@"businessName"] amount:fixedAmount];
+    [items addObject:mainItem];
+    paymentRequest.paymentSummaryItems = items;
     
     dispatch_async(dispatch_get_main_queue(), ^{
         PKPaymentAuthorizationViewController *controller = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest:paymentRequest];
