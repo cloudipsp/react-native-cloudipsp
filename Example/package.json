@@ -1,6 +1,6 @@
 {
   "name": "cloudipsp",
-  "version": "0.4.3",
+  "version": "0.4.5",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start"
@@ -9,7 +9,7 @@
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-webview": "8.1.0",
-    "react-native-cloudipsp": "0.4.3"
+    "react-native-cloudipsp": "0.4.5"
   },
   "devDependencies": {
     "@babel/core": "7.8.4",
