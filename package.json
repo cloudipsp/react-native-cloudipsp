@@ -1,9 +1,13 @@
 {
   "name": "react-native-cloudipsp",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "Library for accepting payments directly from android application's clients.",
-  "main": "index.ts",
+  "main": "dist/commonjs/index.js",
+  "module": "dist/module/index.js",
+  "react-native": "src/index.ts",
+  "types": "dist/typescript/index.d.ts",
   "scripts": {
+    "build": "bob build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +21,17 @@
     "android",
     "payment"
   ],
+  "devDependencies": {
+    "@tsconfig/react-native": "^2.0.2",
+    "@types/jest": "^29.2.1",
+    "@types/react": "^18.0.24",
+    "eslint": "^8.19.0",
+    "jest": "^29.2.1",
+    "react": "18.2.0",
+    "react-native": "0.71.4",
+    "typescript": "4.9.5",
+    "react-native-builder-bob": "0.20.4"
+  },
   "peerDependencies": {
     "react-native": ">=0.61.5",
     "react-native-webview": ">=8.0.0"
@@ -26,5 +41,17 @@
   "bugs": {
     "url": "https://github.com/cloudipsp/react-native-cloudipsp/issues"
   },
-  "homepage": "https://cloudipsp.com"
+  "homepage": "https://cloudipsp.com",
+  "jest": {
+    "preset": "react-native"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "dist",
+    "targets": [
+      "typescript",
+      "commonjs",
+      "module"
+    ]
+  }
 }

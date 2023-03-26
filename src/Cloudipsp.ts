@@ -1,12 +1,21 @@
-import { NativeModules, Platform } from 'react-native';
+import {Platform} from 'react-native';
 import RNWebView from 'react-native-webview';
-import {isCvv4Length} from './CvvUtils';
+
+import {
+  Card,
+  CardPrivate,
+  Failure,
+  Order,
+  OrderPrivate,
+  Receipt,
+  req,
+} from './models';
+import {
+  CloudipspWebView,
+  CloudipspWebviewPrivate,
+  CloudipspWebviewProvider,
+} from './CloudipspWebview';
 import {Native} from './Native';
-import {Card, CardPrivate, Failure, Order, OrderPrivate, Receipt, req} from './models';
-import {CloudipspWebView, CloudipspWebviewPrivate, CloudipspWebviewProvider} from './CloudipspWebview';
-
-
-
 
 export class Cloudipsp {
   private readonly __merchantId__: number;
@@ -406,7 +415,7 @@ export class Cloudipsp {
         'Content-Type': 'application/json',
         'User-Agent': 'React-Native',
         'SDK-OS': Platform.OS,
-        'SDK-Version': '0.7.0'
+        'SDK-Version': '1.0.0'
       },
       body: JSON.stringify({ request })
     })

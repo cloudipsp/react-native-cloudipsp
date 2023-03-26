@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, TextStyle, StyleProp } from 'react-native';
+import {View, Text, StyleSheet, TextStyle, StyleProp} from 'react-native';
 
 import {Card} from './models';
 import {CardLayout} from './CardLayout';

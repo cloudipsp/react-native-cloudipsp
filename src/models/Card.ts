@@ -1,6 +1,5 @@
 import {isCvv4Length} from '../CvvUtils';
 
-
 function lunaCheck(cardNumber: string): boolean {
   let sum = 0;
   let odd = true;
@@ -22,8 +21,6 @@ function lunaCheck(cardNumber: string): boolean {
 
   return sum % 10 === 0;
 }
-
-
 
 function isValidExpireMonthValue(mm: number): boolean {
   return mm >= 1 && mm <= 12;
@@ -51,29 +48,29 @@ export class Card {
     throw new Error('Unimplemented')
   };
 
-  isValidCardNumber = () => {
-    let cardNumber = this.__getCardNumber__();
+  public readonly isValidCardNumber = () => {
+    const cardNumber = this.__getCardNumber__();
     if (!(12 <= cardNumber.length && cardNumber.length <= 19)) {
       return false;
     }
     return lunaCheck(cardNumber);
   };
 
-  isValidExpireMonth = () => {
-    let mm = this.__getExpMm__();
+  public readonly isValidExpireMonth = (): boolean => {
+    const mm = this.__getExpMm__();
     return isValidExpireMonthValue(mm);
   };
 
-  isValidExpireYear = () => {
-    let yy = this.__getExpYy__();
+  public readonly isValidExpireYear = (): boolean => {
+    const yy = this.__getExpYy__();
     if (!isValidExpireYearValue(yy)) {
       return false;
     }
-    let year = new Date().getFullYear() - 2000;
+    const year = new Date().getFullYear() - 2000;
     return year <= yy;
   };
 
-  isValidExpireDate = () => {
+  public readonly isValidExpireDate = (): boolean => {
     let mm = this.__getExpMm__();
     if (!isValidExpireMonthValue(mm)) {
       return false;
@@ -90,7 +87,7 @@ export class Card {
     return (yy > year) || (yy >= year && mm >= month);
   };
 
-  isValidCvv = () => {
+  public readonly isValidCvv = (): boolean => {
     let cvv = this.__getCvv__();
     if (isCvv4Length(this.__getCardNumber__())) {
       return cvv.length === 4;
@@ -99,8 +96,10 @@ export class Card {
     }
   };
 
-  isValidCard = () => {
-    return this.isValidCardNumber() && this.isValidExpireDate() && this.isValidCvv();
+  public readonly isValidCard = (): boolean => {
+    return this.isValidCardNumber() &&
+      this.isValidExpireDate() &&
+      this.isValidCvv();
   };
 }
 
@@ -110,4 +109,4 @@ export interface CardPrivate {
   __getExpYy__(): number;
   __getExpMm__(): number;
   __getCvv__(): string;
-};
+}

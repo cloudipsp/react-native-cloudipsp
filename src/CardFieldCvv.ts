@@ -1,6 +1,5 @@
 import {CardFieldBase, CardFieldBasePrivate} from './CardFieldBase';
 
-
 function getSelfName() {
   return 'CardFieldCvv';
 }

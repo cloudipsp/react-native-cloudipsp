@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleProp, View, ViewStyle} from 'react-native';
 
-import { Card, CardPrivate } from './models';
+import {Card, CardPrivate} from './models';
 
 import {CardFieldBase, CardFieldBasePrivate} from './CardFieldBase';
 import {CardFieldNumber} from './CardFieldNumber';

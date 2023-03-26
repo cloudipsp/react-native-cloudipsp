@@ -6,6 +6,7 @@ export {Order} from './models/Order';
 export {Receipt} from './models/Receipt';
 export {Verification} from './models/Verification';
 
+export {type CloudipspInputProps} from './CardFieldBase';
 export {CardFieldCvv} from './CardFieldCvv';
 export {CardFieldExpMm} from './CardFieldExpMm';
 export {CardFieldExpYy} from './CardFieldExpYy';

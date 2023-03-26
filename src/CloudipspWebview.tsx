@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Platform } from 'react-native';
-import { WebView } from 'react-native-webview';
+import {Platform, View} from 'react-native';
+import {WebView} from 'react-native-webview';
+import {WebViewNavigationEvent} from 'react-native-webview/lib/WebViewTypes';
 
 import {Receipt} from './models'
 import {Native} from './Native';
-import {WebViewNavigationEvent} from "react-native-webview/lib/WebViewTypes";
 
 
 const addViewportMeta = `(${String(() => {
@@ -26,7 +26,6 @@ const addViewportMeta = `(${String(() => {
 type Props = {
 
 };
-
 
 type State = {
   baseUrl: undefined;
@@ -131,6 +130,7 @@ export class CloudipspWebView extends React.Component<Props, State> {
 }
 
 export type CloudipspWebviewProvider = (callback: (webView: CloudipspWebView) => void) => void;
+
 export interface CloudipspWebviewPrivate {
   __confirm__(
     baseUrl: string,
@@ -139,4 +139,4 @@ export interface CloudipspWebviewPrivate {
     apiHost: string,
     callbackUrl: string,
   ): Promise<Receipt>
-};
+}

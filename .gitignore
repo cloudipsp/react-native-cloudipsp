@@ -41,3 +41,4 @@ android/app/libs
 android/keystores/debug.keystore
 
 Example/ios/Pods
+package-lock.json

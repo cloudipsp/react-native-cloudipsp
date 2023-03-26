@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import {NativeModules} from 'react-native';
 
 export interface INativeAndroid {
   addCookies(host: string, cookie: string): void;
