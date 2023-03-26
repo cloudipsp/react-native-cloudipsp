@@ -2,7 +2,7 @@
   "name": "react-native-cloudipsp",
   "version": "0.6.0",
   "description": "Library for accepting payments directly from android application's clients.",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

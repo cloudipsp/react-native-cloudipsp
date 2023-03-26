@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import {
   AppRegistry,
@@ -7,7 +6,6 @@ import {
   TextInput,
   View,
   Button,
-  Picker,
   TouchableOpacity,
   StyleSheet,
   Alert,
@@ -16,35 +14,54 @@ import {
 } from 'react-native';
 
 import {
-  Currency,
-  Order,
-  Receipt,
-  Failure,
-  Cloudipsp,
-  CardInput,
-  CardLayout,
-  CardFieldNumber,
+  Card,
+  CardFieldCvv,
   CardFieldExpMm,
   CardFieldExpYy,
-  CardFieldCvv,
-  CloudipspWebView
+  CardFieldNumber,
+  CardInput,
+  CardLayout,
+  Cloudipsp,
+  CloudipspWebView,
+  Order,
 } from 'react-native-cloudipsp';
 
+import {Picker} from '@react-native-picker/picker'
 
-class ExampleApp extends React.Component {
-  constructor(props) {
-    super(props);
+type Mode = 'entry' | 'default' | 'flexible';
 
-    this.state = {
-      merchant: '1396424',
-      amount: '1',
-      ccy: 'UAH',
-      email: 'example@test.com',
-      description: 'test payment :)',
-      mode: 'entry'
-    };
-  }
+type State = {
+  merchant: string;
+  amount: string;
+  ccy: string;
+  email: string;
+  description: string;
+  mode: Mode;
+  webView?: 1 | undefined;
+};
 
+class ExampleApp extends React.Component<unknown, State> {
+  state: State = {
+    merchant: '1396424',
+    amount: '1',
+    ccy: 'UAH',
+    email: 'example@test.com',
+    description: 'test payment :)',
+    mode: 'entry'
+  };
+  private readonly _inputAmount = React.createRef<TextInput>();
+  private readonly _inputEmail = React.createRef<TextInput>();
+  private readonly _inputDescription = React.createRef<TextInput>();
+
+
+
+  private readonly _cardInputRef = React.createRef<CardInput>();
+  private readonly _cardLayoutRef = React.createRef<CardLayout>();
+  private readonly _inputNumber = React.createRef<CardFieldNumber>();
+  private readonly _inputExpMm = React.createRef<CardFieldExpMm>();
+  private readonly _inputExpYy = React.createRef<CardFieldExpYy>();
+  private readonly _inputCvv = React.createRef<CardFieldCvv>();
+  private readonly _cloudipspWebView = React.createRef<CloudipspWebView>();
 
   componentDidMount() {
     Cloudipsp.supportsApplePay()
@@ -57,7 +74,7 @@ class ExampleApp extends React.Component {
       });
   }
 
-  getOrder = () => {
+  private readonly _getOrder = () => {
     return new Order(
       Number(this.state.amount),
       this.state.ccy,
@@ -67,10 +84,17 @@ class ExampleApp extends React.Component {
     );
   };
 
-  pay = () => {
-    const order = this.getOrder();
-    const card = this.cardForm.getCard();
-    if (!card.isValidCardNumber()) {
+  private readonly _pay = () => {
+    let card: Card | null = null;
+
+    if (this.state.mode === 'default') {
+      card = this._cardInputRef.current?.getCard() ?? null;
+    } else if (this.state.mode === 'flexible') {
+      card = this._cardLayoutRef.current?.getCard() ?? null;
+    }
+
+    const order = this._getOrder();
+    if (!card || !card.isValidCardNumber()) {
       Alert.alert('Warning', 'Credit card number is not valid');
     } else if (!card.isValidExpireMonth()) {
       Alert.alert('Warning', 'Expire month is not valid');
@@ -81,7 +105,7 @@ class ExampleApp extends React.Component {
     } else if (!card.isValidCvv()) {
       Alert.alert('Warning', 'CVV is not valid');
     } else {
-      const cloudipsp = this.cloudipsp();
+      const cloudipsp = this._cloudipsp();
       cloudipsp.pay(card, order)
         .then((receipt) => {
           this.setState({ webView: undefined });
@@ -94,16 +118,16 @@ class ExampleApp extends React.Component {
     }
   };
 
-  cloudipsp = () => {
+  private readonly _cloudipsp = (): Cloudipsp => {
     return new Cloudipsp(Number(this.state.merchant), (payConfirmator) => {
       this.setState({ webView: 1 });
-      return payConfirmator(this.cloudipspWebView);
+      return payConfirmator(this._cloudipspWebView.current!);
     });
   };
 
   applePay = () => {
-    const cloudipsp = this.cloudipsp();
-    const order = this.getOrder();
+    const cloudipsp = this._cloudipsp();
+    const order = this._getOrder();
     cloudipsp.applePay(order)
       .then((receipt) => {
         this.setState({ webView: undefined });
@@ -116,8 +140,8 @@ class ExampleApp extends React.Component {
   };
 
   googlePay = () => {
-    const cloudipsp = this.cloudipsp();
-    const order = this.getOrder();
+    const cloudipsp = this._cloudipsp();
+    const order = this._getOrder();
     cloudipsp.googlePay(order)
       .then((receipt) => {
         this.setState({ webView: undefined });
@@ -130,20 +154,11 @@ class ExampleApp extends React.Component {
       });
   };
 
-  render() {
+  render(): React.ReactNode {
     return <SafeAreaView style={styles.flex1}>
       {this.state.webView === undefined
         ? this.renderScreen()
-        : <CloudipspWebView
-          ref={(ref) => {
-            this.cloudipspWebView = ref;
-          }}
-          decelerationRate="normal"
-          onError={(error) => {
-            console.log('webViewError:' + JSON.stringify(error));
-          }}
-          style={{ flex: 1 }}
-        />
+        : <CloudipspWebView ref={this._cloudipspWebView} />
       }
     </SafeAreaView>
   }
@@ -175,8 +190,8 @@ class ExampleApp extends React.Component {
             onChangeText={(text) => {
               this.setState({ merchant: text });
             }}
-            onSubmitEditing={(event) => {
-              this.refs.inputAmount.focus();
+            onSubmitEditing={() => {
+              this._inputAmount.current?.focus();
             }}
             style={styles.simpleTextInput}
           />
@@ -184,15 +199,15 @@ class ExampleApp extends React.Component {
             <Text style={styles.simpleText}>Amount:</Text>
           </View>
           <TextInput
-            ref="inputAmount"
+            ref={this._inputAmount}
             value={this.state.amount}
             maxLength={7}
             keyboardType='numeric'
             onChangeText={(text) => {
               this.setState({ amount: text });
             }}
-            onSubmitEditing={(event) => {
-              this.refs.inputEmail.focus();
+            onSubmitEditing={() => {
+              this._inputEmail.current?.focus();
             }}
             style={styles.simpleTextInput}
           />
@@ -212,26 +227,30 @@ class ExampleApp extends React.Component {
           </Picker>
           <Text style={styles.simpleText}>Email:</Text>
           <TextInput
-            ref="inputEmail"
+            ref={this._inputEmail}
             value={this.state.email}
             keyboardType='email-address'
             onChangeText={(text) => {
               this.setState({ email: text });
             }}
-            onSubmitEditing={(event) => {
-              this.refs.inputDescription.focus();
+            onSubmitEditing={() => {
+              this._inputDescription.current?.focus();
             }}
             style={styles.simpleTextInput}
           />
           <Text style={styles.simpleText}>Description:</Text>
           <TextInput
-            ref="inputDescription"
+            ref={this._inputDescription}
             value={this.state.description}
             onChangeText={(text) => {
               this.setState({ description: text });
             }}
-            onSubmitEditing={(event) => {
-              this.refs.cardInput.focus();
+            onSubmitEditing={() => {
+              if (this.state.mode === 'default') {
+                this._cardInputRef.current?.focus();
+              } else {
+                this._inputNumber.current?.focus();
+              }
             }}
             style={styles.simpleTextInput}
           />
@@ -239,7 +258,7 @@ class ExampleApp extends React.Component {
           <View style={{ marginTop: 10, flexDirection: 'row' }}>
             <View style={styles.flex1}>
               <Button
-                onPress={this.pay}
+                onPress={this._pay}
                 title="Pay by Card"
               />
             </View>
@@ -262,7 +281,7 @@ class ExampleApp extends React.Component {
     }
   }
 
-  renderModes() {
+  private renderModes(): React.ReactNode {
     return (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <View>
         <Button
@@ -283,16 +302,14 @@ class ExampleApp extends React.Component {
     </View>);
   }
 
-  renderCardForm() {
+  private renderCardForm(): React.ReactNode {
     if (this.state.mode === 'default') {
       return (
         <View>
           <Text>Default card view</Text>
 
           <CardInput
-            ref={(ref) => {
-              this.cardForm = ref;
-            }}
+            ref={this._cardInputRef}
             debug={true}
             textStyle={styles.simpleText}
             textInputStyle={styles.simpleTextInput}
@@ -301,55 +318,48 @@ class ExampleApp extends React.Component {
     } else {
       return (
         <CardLayout
-          ref={(ref) => {
-            this.cardForm = ref;
-          }}
-          inputNumber={() => this.refs.inputNumber}
-          inputExpMm={() => this.refs.inputMm}
-          inputExpYy={() => this.refs.inputYy}
-          inputCvv={() => this.refs.inputCvv}
+          ref={this._cardLayoutRef}
+          inputNumber={() => this._inputNumber.current!}
+          inputExpMm={() => this._inputExpMm.current!}
+          inputExpYy={() => this._inputExpYy.current!}
+          inputCvv={() => this._inputCvv.current!}
         >
           <Text style={{ marginVertical: 20 }}>Card form layout. Cvv and expirity field were swapped</Text>
           <Text
             onPress={() => {
-              this.refs.cardLayout.test();
+              this._cardLayoutRef.current?.test();
             }}>
             Card Number:
           </Text>
           <CardFieldNumber
-            ref="inputNumber"
+            ref={this._inputNumber}
             style={styles.simpleTextInput}
             onSubmitEditing={() => {
-              this.refs.inputCvv.focus();
+              this._inputCvv.current?.focus();
             }}
           />
-          <Text style={[this.props.textStyle, { marginTop: 10 }]}>CVV:</Text>
+          <Text style={{ marginTop: 10 }}>CVV:</Text>
           <CardFieldCvv
-            ref="inputCvv"
+            ref={this._inputCvv}
             style={styles.simpleTextInput}
             onSubmitEditing={() => {
-              this.refs.inputMm.focus();
+              this._inputExpMm.current?.focus();
             }}
           />
-          <Text style={[this.props.textStyle, { marginTop: 10 }]}>Expiry:</Text>
+          <Text style={{marginTop: 10}}>Expiry:</Text>
           <View style={{ flexDirection: 'row', flex: 1 }}>
             <CardFieldExpMm
-              ref="inputMm"
+              ref={this._inputExpMm}
               style={[styles.flex1, styles.simpleTextInput]}
               placeholder='MM'
               onSubmitEditing={() => {
-                this.refs.inputYy.focus();
+                this._inputExpYy.current?.focus();
               }}
             />
             <CardFieldExpYy
-              ref="inputYy"
+              ref={this._inputExpYy}
               style={[styles.flex1, styles.simpleTextInput]}
               placeholder='YY'
-              onSubmitEditing={() => {
-                if (this.props.onCompletion) {
-                  this.props.onCompletion(this);
-                }
-              }}
             />
           </View>
         </CardLayout>);
