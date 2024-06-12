@@ -42,7 +42,7 @@ RCT_EXPORT_METHOD(applePay:(NSDictionary *)config
     NSDictionary* data = [config objectForKey:@"data"];
     PKPaymentRequest *paymentRequest = [[PKPaymentRequest alloc] init];
     paymentRequest.countryCode = @"US";
-    paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard, PKPaymentNetworkAmex];
+    paymentRequest.supportedNetworks = @[PKPaymentNetworkVisa, PKPaymentNetworkMasterCard];
     paymentRequest.merchantCapabilities = PKMerchantCapability3DS;
     paymentRequest.merchantIdentifier = [data objectForKey:@"merchantIdentifier"];
     paymentRequest.currencyCode = currency;
